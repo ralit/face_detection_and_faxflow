@@ -14,7 +14,10 @@ public class Main {
 //				48, 138, -22, -14, 11, 24);
 //		
 //		FaceDetection face = new FaceDetection(HOME + "/Desktop/Snakes/p388-nemu-yumemi.jpg",
-//				48, 138, 106, 114, 139, 152);
+//				48, 138, 106, 114, 139, 152,
+//				HOME + "/Desktop/Snakes/初期グラフ1.txt",
+//				HOME + "/Desktop/Snakes/高さのヒストグラム1.txt");
+//		writeBitmap(face.getImage().p, HOME + "/Desktop/Snakes/maxflowed1.jpg");
 		
 		FaceDetection face = new FaceDetection(HOME + "/Desktop/Snakes/DSC_0027.JPG",
 				48, 138, 106, 114, 139, 152,

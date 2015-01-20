@@ -20,7 +20,7 @@ public class FaceDetection {
 	private int[] 肌色のピクセル数配列;
 	private ArrayList<Rect> rects;
 	private ArrayList<Rect> rect;
-	private final int residual_capacity = 1000000;
+	private final int residual_capacity = 1;
 	private Graph[][] graph;
 	
 	public FaceDetection(String 入力画像パス, int y0, int y1, int u0, int u1, int v0, int v1, String 初期グラフ出力, String 高さのヒストグラム出力) throws IOException {
@@ -247,9 +247,9 @@ public class FaceDetection {
 				for(int x = 0; x < 入力画像.w; x++) {
 //					if(y == 0 || y == 入力画像.h - 1 || x == 0 || x == 入力画像.w - 1) { continue; }
 					if(graph[y][x].e > 0) {
-						if(y != 324) {
-							System.out.println("add");
-						}
+//						if(y != 324) {
+//							System.out.println("add");
+//						}
 						e.add(new Point(x,y));
 					}
 				}
@@ -264,31 +264,42 @@ public class FaceDetection {
 					int min_h = Integer.MAX_VALUE;
 					int dxx = 0, dyy = 0;
 					int count = 0, m = 0;
-					for(int dx = -1; dx <= 1; dx++) {
-						for(int dy = -1; dy <= 1; dy++) {
+					int cf_not_zero_flag = 0;
+					for(int dy = -1; dy <= 1; dy++) {
+						for(int dx = -1; dx <= 1; dx++) {
 							if(dx==0 && dy==0) { continue; }
-							if(0 <= py+dy && py+dy <= 入力画像.h - 1 && 0 <= px+dx && px+dx <= 入力画像.w - 1) {
-								if(graph[py+dy][px+dx].h < min_h) {
-									min_h = graph[py+dy][px+dx].h;
-									dxx = dx;
-									dyy = dy;
-									m = count;
+//							System.out.println("py+dy:" + (py+dy) + ", px+dx:" + (px+dx));
+//							if(0 <= py+dy && py+dy <= 入力画像.h - 1 && 0 <= px+dx && px+dx <= 入力画像.w - 1) {
+								if(graph[py][px].c[count] > 0) {
+									if(graph[py+dy][px+dx].h < min_h) {
+										min_h = graph[py+dy][px+dx].h;
+										dxx = dx;
+										dyy = dy;
+										m = count;
+										cf_not_zero_flag = 1;
+									}	
 								}
-							}
+//							}
 							count++;
 						}
+					}
+					if(cf_not_zero_flag == 0) {
+						continue;
 					}
 					if(graph[py][px].h <= graph[py+dyy][px+dxx].h) {
 						h_histogram[graph[py][px].h]--;
 						graph[py][px].h = graph[py+dyy][px+dxx].h + 1;
 						h_histogram[graph[py][px].h]++;
 					}
-//					int f = Math.min(graph[py][px].e, graph[py][px].c[m]);
-					int f = graph[py][px].e;
+					int f = Math.min(graph[py][px].e, graph[py][px].c[m]);
+//					int f = graph[py][px].e;
 					graph[py][px].e -= f;
 					graph[py][px].c[m] -= f;
 					graph[py+dyy][px+dxx].e += f;
 					graph[py+dyy][px+dxx].c[7-m] += f;
+					int f1 = Math.min(graph[py+dyy][px+dxx].e, graph[py+dyy][px+dxx].to_t);
+					graph[py+dyy][px+dxx].e -= f1;
+					graph[py+dyy][px+dxx].to_t -= f1;
 					int min_zero_h = 0;
 					for(int k = 0; k < 1024; k++) {
 						if(h_histogram[k] == 0) {
@@ -359,6 +370,26 @@ public class FaceDetection {
 			for(int dx = 0; dx < 入力画像.w; dx++) {
 				if(graph[dy][dx].h == 1) {
 					入力画像.p[dy][dx] = rgb(0,255,0);
+				} else if(graph[dy][dx].h == 2) {
+					入力画像.p[dy][dx] = rgb(0,220,0);
+				} else if(graph[dy][dx].h == 3) {
+					入力画像.p[dy][dx] = rgb(0,200,0);
+				} else if(graph[dy][dx].h == 4) {
+					入力画像.p[dy][dx] = rgb(0,180,0);
+				} else if(graph[dy][dx].h == 5) {
+					入力画像.p[dy][dx] = rgb(0,150,0);
+				} else if(graph[dy][dx].h == 6) {
+					入力画像.p[dy][dx] = rgb(0,120,0);
+				} else if(graph[dy][dx].h == 7) {
+					入力画像.p[dy][dx] = rgb(0,90,0);
+				} else if(graph[dy][dx].h == 8) {
+					入力画像.p[dy][dx] = rgb(0,60,0);
+				} else if(graph[dy][dx].h == 9) {
+					入力画像.p[dy][dx] = rgb(0,30,0);
+				} else if(graph[dy][dx].h == 10) {
+					入力画像.p[dy][dx] = rgb(0,15,0);
+				} else if(graph[dy][dx].h == 11) {
+					入力画像.p[dy][dx] = rgb(0,0,0);
 				}
 			}
 		}
